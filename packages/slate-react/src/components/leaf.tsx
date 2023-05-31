@@ -1,18 +1,46 @@
-import React, { useRef, useEffect } from 'react'
+import React, {
+  useRef,
+  useCallback,
+  MutableRefObject,
+  useState,
+  useEffect,
+} from 'react'
 import { Element, Text } from 'slate'
+import { ResizeObserver as ResizeObserverPolyfill } from '@juggle/resize-observer'
 import String from './string'
 import {
   PLACEHOLDER_SYMBOL,
   EDITOR_TO_PLACEHOLDER_ELEMENT,
-  EDITOR_TO_STYLE_ELEMENT,
+  EDITOR_TO_FORCE_RENDER,
 } from '../utils/weak-maps'
 import { RenderLeafProps, RenderPlaceholderProps } from './editable'
 import { useSlateStatic } from '../hooks/use-slate-static'
+import { IS_SAFARI } from '../utils/environment'
+
+function disconnectPlaceholderResizeObserver(
+  placeholderResizeObserver: MutableRefObject<ResizeObserver | null>,
+  releaseObserver: boolean
+) {
+  if (placeholderResizeObserver.current) {
+    placeholderResizeObserver.current.disconnect()
+    if (releaseObserver) {
+      placeholderResizeObserver.current = null
+    }
+  }
+}
+
+type TimerId = ReturnType<typeof setTimeout> | null
+
+function clearTimeoutRef(timeoutRef: MutableRefObject<TimerId>) {
+  if (timeoutRef.current) {
+    clearTimeout(timeoutRef.current)
+    timeoutRef.current = null
+  }
+}
 
 /**
  * Individual leaves in a text node with unique formatting.
  */
-
 const Leaf = (props: {
   isLast: boolean
   leaf: Text
@@ -30,72 +58,68 @@ const Leaf = (props: {
     renderLeaf = (props: RenderLeafProps) => <DefaultLeaf {...props} />,
   } = props
 
-  const placeholderRef = useRef<HTMLSpanElement | null>(null)
   const editor = useSlateStatic()
-
   const placeholderResizeObserver = useRef<ResizeObserver | null>(null)
+  const placeholderRef = useRef<HTMLElement | null>(null)
+  const [showPlaceholder, setShowPlaceholder] = useState(false)
+  const showPlaceholderTimeoutRef = useRef<TimerId>(null)
 
-  useEffect(() => {
-    return () => {
-      if (placeholderResizeObserver.current) {
-        placeholderResizeObserver.current.disconnect()
-      }
-    }
-  }, [])
+  const callbackPlaceholderRef = useCallback(
+    (placeholderEl: HTMLElement | null) => {
+      disconnectPlaceholderResizeObserver(
+        placeholderResizeObserver,
+        placeholderEl == null
+      )
 
-  useEffect(() => {
-    const placeholderEl = placeholderRef?.current
+      if (placeholderEl == null) {
+        EDITOR_TO_PLACEHOLDER_ELEMENT.delete(editor)
+        leaf.onPlaceholderResize?.(null)
+      } else {
+        EDITOR_TO_PLACEHOLDER_ELEMENT.set(editor, placeholderEl)
 
-    if (placeholderEl) {
-      EDITOR_TO_PLACEHOLDER_ELEMENT.set(editor, placeholderEl)
-    } else {
-      EDITOR_TO_PLACEHOLDER_ELEMENT.delete(editor)
-    }
-
-    if (placeholderResizeObserver.current) {
-      // Update existing observer.
-      placeholderResizeObserver.current.disconnect()
-      if (placeholderEl)
-        placeholderResizeObserver.current.observe(placeholderEl)
-    } else if (placeholderEl) {
-      // Create a new observer and observe the placeholder element.
-      placeholderResizeObserver.current = new ResizeObserver(([{ target }]) => {
-        const styleElement = EDITOR_TO_STYLE_ELEMENT.get(editor)
-        if (styleElement) {
-          // Make the min-height the height of the placeholder.
-          const minHeight = `${target.clientHeight}px`
-          styleElement.innerHTML = `:where([data-slate-editor-id="${editor.id}"]) { min-height: ${minHeight}; }`
+        if (!placeholderResizeObserver.current) {
+          // Create a new observer and observe the placeholder element.
+          const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill
+          placeholderResizeObserver.current = new ResizeObserver(() => {
+            leaf.onPlaceholderResize?.(placeholderEl)
+          })
         }
-      })
-
-      placeholderResizeObserver.current.observe(placeholderEl)
-    }
-
-    if (!placeholderEl) {
-      // No placeholder element, so no need for a resize observer.
-      const styleElement = EDITOR_TO_STYLE_ELEMENT.get(editor)
-      if (styleElement) {
-        // No min-height if there is no placeholder.
-        styleElement.innerHTML = ''
+        placeholderResizeObserver.current.observe(placeholderEl)
+        placeholderRef.current = placeholderEl
       }
-    }
-
-    return () => {
-      EDITOR_TO_PLACEHOLDER_ELEMENT.delete(editor)
-    }
-  }, [placeholderRef, leaf])
+    },
+    [placeholderRef, leaf, editor]
+  )
 
   let children = (
     <String isLast={isLast} leaf={leaf} parent={parent} text={text} />
   )
 
-  if (leaf[PLACEHOLDER_SYMBOL]) {
+  const leafIsPlaceholder = leaf[PLACEHOLDER_SYMBOL]
+  useEffect(() => {
+    if (leafIsPlaceholder) {
+      if (!showPlaceholderTimeoutRef.current) {
+        // Delay the placeholder so it will not render in a selection
+        showPlaceholderTimeoutRef.current = setTimeout(() => {
+          setShowPlaceholder(true)
+          showPlaceholderTimeoutRef.current = null
+        }, 300)
+      }
+    } else {
+      clearTimeoutRef(showPlaceholderTimeoutRef)
+      setShowPlaceholder(false)
+    }
+    return () => clearTimeoutRef(showPlaceholderTimeoutRef)
+  }, [leafIsPlaceholder, setShowPlaceholder])
+
+  if (leafIsPlaceholder && showPlaceholder) {
     const placeholderProps: RenderPlaceholderProps = {
       children: leaf.placeholder,
       attributes: {
         'data-slate-placeholder': true,
         style: {
           position: 'absolute',
+          top: 0,
           pointerEvents: 'none',
           width: '100%',
           maxWidth: '100%',
@@ -103,9 +127,11 @@ const Leaf = (props: {
           opacity: '0.333',
           userSelect: 'none',
           textDecoration: 'none',
+          // Fixes https://github.com/udecode/plate/issues/2315
+          WebkitUserModify: IS_SAFARI ? 'inherit' : undefined,
         },
         contentEditable: false,
-        ref: placeholderRef,
+        ref: callbackPlaceholderRef,
       },
     }
 

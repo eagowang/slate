@@ -46,7 +46,7 @@ const retries = process.env.PLAYWRIGHT_RETRIES
 const config: PlaywrightTestConfig = {
   testDir: './playwright',
   /* Maximum time one test can run for. */
-  timeout: 10 * 1000,
+  timeout: 20 * 1000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
@@ -78,6 +78,9 @@ const config: PlaywrightTestConfig = {
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /* Name of attribute for selecting elements by page.getByTestId */
+    testIdAttribute: 'data-test-id',
   },
 
   /* Configure projects for major browsers */

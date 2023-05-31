@@ -1,16 +1,16 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { Editor, Node, Descendant, Scrubber } from 'slate'
-import { ReactEditor } from '../plugin/react-editor'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { Descendant, Editor, Node, Scrubber } from 'slate'
 import { FocusedContext } from '../hooks/use-focused'
-import { EditorContext } from '../hooks/use-slate-static'
+import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
 import { SlateContext, SlateContextValue } from '../hooks/use-slate'
 import {
-  getSelectorContext,
+  useSelectorContext,
   SlateSelectorContext,
 } from '../hooks/use-slate-selector'
-import { EDITOR_TO_ON_CHANGE } from '../utils/weak-maps'
+import { EditorContext } from '../hooks/use-slate-static'
+import { ReactEditor } from '../plugin/react-editor'
 import { IS_REACT_VERSION_17_OR_ABOVE } from '../utils/environment'
-import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect'
+import { EDITOR_TO_ON_CHANGE } from '../utils/weak-maps'
 
 /**
  * A wrapper around the provider to handle `onChange` events, because the editor
@@ -19,18 +19,18 @@ import { useIsomorphicLayoutEffect } from '../hooks/use-isomorphic-layout-effect
 
 export const Slate = (props: {
   editor: ReactEditor
-  value: Descendant[]
+  initialValue: Descendant[]
   children: React.ReactNode
   onChange?: (value: Descendant[]) => void
 }) => {
-  const { editor, children, onChange, value, ...rest } = props
+  const { editor, children, onChange, initialValue, ...rest } = props
   const unmountRef = useRef(false)
 
   const [context, setContext] = React.useState<SlateContextValue>(() => {
-    if (!Node.isNodeList(value)) {
+    if (!Node.isNodeList(initialValue)) {
       throw new Error(
-        `[Slate] value is invalid! Expected a list of elements but got: ${Scrubber.stringify(
-          value
+        `[Slate] initialValue is invalid! Expected a list of elements but got: ${Scrubber.stringify(
+          initialValue
         )}`
       )
     }
@@ -39,7 +39,7 @@ export const Slate = (props: {
         `[Slate] editor is invalid! You passed: ${Scrubber.stringify(editor)}`
       )
     }
-    editor.children = value
+    editor.children = initialValue
     Object.assign(editor, rest)
     return { v: 0, editor }
   })
@@ -47,7 +47,7 @@ export const Slate = (props: {
   const {
     selectorContext,
     onChange: handleSelectorChange,
-  } = getSelectorContext(editor)
+  } = useSelectorContext(editor)
 
   const onContextChange = useCallback(() => {
     if (onChange) {
@@ -59,7 +59,7 @@ export const Slate = (props: {
       editor,
     }))
     handleSelectorChange(editor)
-  }, [onChange])
+  }, [editor, handleSelectorChange, onChange])
 
   useEffect(() => {
     EDITOR_TO_ON_CHANGE.set(editor, onContextChange)
@@ -68,13 +68,13 @@ export const Slate = (props: {
       EDITOR_TO_ON_CHANGE.set(editor, () => {})
       unmountRef.current = true
     }
-  }, [])
+  }, [editor, onContextChange])
 
   const [isFocused, setIsFocused] = useState(ReactEditor.isFocused(editor))
 
   useEffect(() => {
     setIsFocused(ReactEditor.isFocused(editor))
-  })
+  }, [editor])
 
   useIsomorphicLayoutEffect(() => {
     const fn = () => setIsFocused(ReactEditor.isFocused(editor))

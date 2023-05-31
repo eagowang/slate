@@ -2268,6 +2268,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@juggle/resize-observer@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@juggle/resize-observer@npm:3.4.0"
+  checksum: 2505028c05cc2e17639fcad06218b1c4b60f932a4ebb4b41ab546ef8c157031ae377e3f560903801f6d01706dbefd4943b6c4704bf19ed86dfa1c62f1473a570
+  languageName: node
+  linkType: hard
+
 "@lerna/add@npm:3.21.0":
   version: 3.21.0
   resolution: "@lerna/add@npm:3.21.0"
@@ -3719,6 +3726,13 @@ __metadata:
   version: 2.3.2
   resolution: "@types/prettier@npm:2.3.2"
   checksum: c4313e16650811f47b07a0fa7ac0742e966f61283a7292eb667fd4626d760bf3b7d896be3eaabb3354ad45fdbe3a340299b018dd3bcce1ff753d030a8cd2479c
+  languageName: node
+  linkType: hard
+
+"@types/prismjs@npm:^1.26.0":
+  version: 1.26.0
+  resolution: "@types/prismjs@npm:1.26.0"
+  checksum: cd5e7a6214c1f4213ec512a5fcf6d8fe37a56b813fc57ac95b5ff5ee074742bfdbd2f2730d9fd985205bf4586728e09baa97023f739e5aa1c9735a7c1ecbd11a
   languageName: node
   linkType: hard
 
@@ -5208,17 +5222,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001248":
-  version: 1.0.30001251
-  resolution: "caniuse-lite@npm:1.0.30001251"
-  checksum: 918e1b1662c26c11291206146bc305d7fd1ca351aa9231c2e21cb1526d87b444830e2d8dc54416ebb8ecf7e0addea12d66a1c41493476229987e5e6922f0c14b
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001332":
-  version: 1.0.30001363
-  resolution: "caniuse-lite@npm:1.0.30001363"
-  checksum: 8dfcb2fa97724349cbbe61d988810bd90bfb40106a289ed6613188fa96dd1f5885c7e9924e46bb30a641bd1579ec34096fdc2b21b47d8500f8a2bfb0db069323
+"caniuse-lite@npm:^1.0.30001248, caniuse-lite@npm:^1.0.30001332":
+  version: 1.0.30001486
+  resolution: "caniuse-lite@npm:1.0.30001486"
+  checksum: 5e8c2ba2679e4ad17dea6d2761a6449b814441bfeac81af6cc9d58af187df6af4b79b27befcbfc4a557e720b21c0399a7d1911c8705922e38938dcc0f40b5d4b
   languageName: node
   linkType: hard
 
@@ -6752,6 +6759,15 @@ __metadata:
     eslint-config-prettier:
       optional: true
   checksum: 30a07e8d12637d2988e371f6a20ff4c86fd7fdc3596d1d18d62c0367804f38e06a65052d0281234aeb2552e4d1908dcb2de20543413e038251a2717a46400a9d
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-react-hooks@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "eslint-plugin-react-hooks@npm:4.6.0"
+  peerDependencies:
+    eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
+  checksum: 23001801f14c1d16bf0a837ca7970d9dd94e7b560384b41db378b49b6e32dc43d6e2790de1bd737a652a86f81a08d6a91f402525061b47719328f586a57e86c3
   languageName: node
   linkType: hard
 
@@ -10770,9 +10786,9 @@ __metadata:
   linkType: hard
 
 "minimist@npm:^1.1.3, minimist@npm:^1.2.0, minimist@npm:^1.2.5":
-  version: 1.2.5
-  resolution: "minimist@npm:1.2.5"
-  checksum: 86706ce5b36c16bfc35c5fe3dbb01d5acdc9a22f2b6cc810b6680656a1d2c0e44a0159c9a3ba51fb072bb5c203e49e10b51dcd0eec39c481f4c42086719bae52
+  version: 1.2.8
+  resolution: "minimist@npm:1.2.8"
+  checksum: 75a6d645fb122dad29c06a7597bddea977258957ed88d7a6df59b5cd3fe4a527e253e9bbf2e783e4b73657f9098b96a5fe96ab8a113655d4109108577ecf85b0
   languageName: node
   linkType: hard
 
@@ -12334,10 +12350,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prismjs@npm:^1.5.1":
-  version: 1.24.1
-  resolution: "prismjs@npm:1.24.1"
-  checksum: e5d14a4ba56773122039295bd760c72106acc964e04cb9831b9ae7e7a58f67ccac6c053e77e21f1018a3684f31d35bb065c0c81fd4ff00b73b1570c3ace4aef0
+"prismjs@npm:^1.29.0":
+  version: 1.29.0
+  resolution: "prismjs@npm:1.29.0"
+  checksum: 007a8869d4456ff8049dc59404e32d5666a07d99c3b0e30a18bd3b7676dfa07d1daae9d0f407f20983865fd8da56de91d09cb08e6aa61f5bc420a27c0beeaf93
   languageName: node
   linkType: hard
 
@@ -13797,7 +13813,7 @@ resolve@^2.0.0-next.3:
     "@babel/runtime": ^7.7.4
     is-plain-object: ^5.0.0
     lodash: ^4.17.21
-    slate: ^0.88.1
+    slate: ^0.94.0
     slate-hyperscript: ^0.81.3
     source-map-loader: ^4.0.0
   peerDependencies:
@@ -13811,7 +13827,7 @@ resolve@^2.0.0-next.3:
   dependencies:
     "@babel/runtime": ^7.7.4
     is-plain-object: ^5.0.0
-    slate: ^0.88.1
+    slate: ^0.94.0
     source-map-loader: ^4.0.0
   peerDependencies:
     slate: ">=0.65.3"
@@ -13844,6 +13860,7 @@ resolve@^2.0.0-next.3:
     "@types/lodash": ^4.14.149
     "@types/mocha": ^5.2.7
     "@types/node": ^16.11.26
+    "@types/prismjs": ^1.26.0
     "@types/react": ^16.9.13
     "@types/react-dom": ^16.9.4
     "@typescript-eslint/eslint-plugin": ^5.30.5
@@ -13857,6 +13874,7 @@ resolve@^2.0.0-next.3:
     eslint-plugin-import: ^2.18.2
     eslint-plugin-prettier: ^3.1.1
     eslint-plugin-react: ^7.16.0
+    eslint-plugin-react-hooks: ^4.6.0
     faker: ^4.1.0
     image-extensions: ^1.1.0
     is-hotkey: ^0.1.6
@@ -13870,7 +13888,7 @@ resolve@^2.0.0-next.3:
     npm-run-all: ^4.1.2
     playwright: ^1.29.1
     prettier: ^1.19.1
-    prismjs: ^1.5.1
+    prismjs: ^1.29.0
     react: ^16.12.0
     react-dom: ^16.12.0
     react-error-boundary: ^1.2.5
@@ -13904,6 +13922,7 @@ resolve@^2.0.0-next.3:
   resolution: "slate-react@workspace:packages/slate-react"
   dependencies:
     "@babel/runtime": ^7.7.4
+    "@juggle/resize-observer": ^3.4.0
     "@types/is-hotkey": ^0.1.1
     "@types/jest": ^27.4.1
     "@types/jsdom": ^16.2.14
@@ -13920,7 +13939,7 @@ resolve@^2.0.0-next.3:
     react-dom: ">=16.8.0"
     react-test-renderer: ">=16.8.0"
     scroll-into-view-if-needed: ^2.2.20
-    slate: ^0.88.1
+    slate: ^0.94.0
     slate-hyperscript: ^0.81.3
     source-map-loader: ^4.0.0
     tiny-invariant: 1.0.6
@@ -13931,7 +13950,7 @@ resolve@^2.0.0-next.3:
   languageName: unknown
   linkType: soft
 
-"slate@^0.88.1, slate@workspace:*, slate@workspace:packages/slate":
+"slate@^0.94.0, slate@workspace:*, slate@workspace:packages/slate":
   version: 0.0.0-use.local
   resolution: "slate@workspace:packages/slate"
   dependencies:

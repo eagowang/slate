@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createEditor, Element, Transforms } from 'slate'
 import { create, act, ReactTestRenderer } from 'react-test-renderer'
 import { Slate, withReact, Editable } from '../src'
@@ -10,7 +10,9 @@ const createNodeMock = () => ({
 
 class MockResizeObserver {
   observe() {}
+
   unobserve() {}
+
   disconnect() {}
 }
 
@@ -21,17 +23,21 @@ describe('slate-react', () => {
     describe('NODE_TO_KEY logic', () => {
       test('should not unmount the node that gets split on a split_node operation', async () => {
         const editor = withReact(createEditor())
-        const value = [{ type: 'block', children: [{ text: 'test' }] }]
-        const mounts = jest.fn<void, [Element]>()
+        const initialValue = [{ type: 'block', children: [{ text: 'test' }] }]
+        const mounts = jest.fn()
 
         let el: ReactTestRenderer
 
         act(() => {
           el = create(
-            <Slate editor={editor} value={value} onChange={() => {}}>
+            <Slate
+              editor={editor}
+              initialValue={initialValue}
+              onChange={() => {}}
+            >
               <Editable
-                renderElement={({ element, children }) => {
-                  React.useEffect(() => mounts(element), [])
+                renderElement={({ children }) => {
+                  useEffect(() => mounts(), [])
 
                   return children
                 }}
@@ -52,20 +58,24 @@ describe('slate-react', () => {
 
       test('should not unmount the node that gets merged into on a merge_node operation', async () => {
         const editor = withReact(createEditor())
-        const value = [
+        const initialValue = [
           { type: 'block', children: [{ text: 'te' }] },
           { type: 'block', children: [{ text: 'st' }] },
         ]
-        const mounts = jest.fn<void, [Element]>()
+        const mounts = jest.fn()
 
         let el: ReactTestRenderer
 
         act(() => {
           el = create(
-            <Slate editor={editor} value={value} onChange={() => {}}>
+            <Slate
+              editor={editor}
+              initialValue={initialValue}
+              onChange={() => {}}
+            >
               <Editable
-                renderElement={({ element, children }) => {
-                  React.useEffect(() => mounts(element), [])
+                renderElement={({ children }) => {
+                  useEffect(() => mounts(), [])
 
                   return children
                 }}
